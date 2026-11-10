@@ -249,3 +249,10 @@ class _ThreadlessTestClient:
 
 fastapi.testclient.TestClient = _ThreadlessTestClient
 starlette.testclient.TestClient = _ThreadlessTestClient
+
+
+# Never wait on provider-overload retries in tests (src/analyzer.py _call_litellm);
+# tests that exercise the retry loop set the variables themselves.
+import os as _os  # noqa: E402
+
+_os.environ.setdefault("LLM_OVERLOAD_MAX_RETRIES", "0")
