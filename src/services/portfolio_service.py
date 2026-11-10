@@ -30,8 +30,8 @@ except Exception:  # pragma: no cover - optional dependency path
     yf = None
 
 EPS = 1e-8
-VALID_MARKETS = {"cn", "hk", "us", "jp", "kr", "tw", "es"}
-PARTIAL_VALUATION_MARKETS = {"jp", "kr", "tw", "es"}
+VALID_MARKETS = {"cn", "hk", "us", "jp", "kr", "tw", "es", "de"}
+PARTIAL_VALUATION_MARKETS = {"jp", "kr", "tw", "es", "de"}
 VALID_COST_METHODS = {"fifo", "avg"}
 VALID_SIDES = {"buy", "sell"}
 VALID_CASH_DIRECTIONS = {"in", "out"}
@@ -1750,6 +1750,6 @@ class PortfolioService:
             return "HKD"
         if market == "us":
             return "USD"
-        if market == "es":
+        if market in ("es", "de"):
             return "EUR"
         return "CNY"

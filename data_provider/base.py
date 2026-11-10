@@ -206,6 +206,11 @@ def _is_es_market(code: str) -> bool:
     return is_suffix_market_symbol(code, "es")
 
 
+def _is_de_market(code: str) -> bool:
+    """Germany / XETRA Yahoo Finance suffix code (e.g. SAP.DE, NUKL.DE)."""
+    return is_suffix_market_symbol(code, "de")
+
+
 def _is_etf_code(code: str) -> bool:
     """判定 A 股 ETF 基金代码（保守规则）。"""
     normalized = normalize_stock_code(code)
@@ -259,6 +264,8 @@ def _market_tag(code: str) -> str:
         return "tw"
     if _is_es_market(code):
         return "es"
+    if _is_de_market(code):
+        return "de"
     return "cn"
 
 
@@ -649,7 +656,7 @@ class DataFetcherManager:
         "MiaoxiangFetcher": set(),
         "PytdxFetcher": {"cn"},
         "BaostockFetcher": {"cn"},
-        "YfinanceFetcher": {"cn", "hk", "us", "jp", "kr", "tw", "es"},
+        "YfinanceFetcher": {"cn", "hk", "us", "jp", "kr", "tw", "es", "de"},
         "LongbridgeFetcher": {"hk", "us"},
         "FutuFetcher": {"hk"},
         "FinnhubFetcher": {"us"},
@@ -1993,9 +2000,10 @@ class DataFetcherManager:
         is_kr = (not is_us) and (not is_hk) and _is_kr_market(stock_code)
         is_tw = (not is_us) and (not is_hk) and _is_tw_market(stock_code)
         is_es = (not is_us) and (not is_hk) and _is_es_market(stock_code)
+        is_de = (not is_us) and (not is_hk) and _is_de_market(stock_code)
         market = (
             "us" if is_us else "hk" if is_hk else "jp" if is_jp else "kr" if is_kr
-            else "tw" if is_tw else "es" if is_es else "cn"
+            else "tw" if is_tw else "es" if is_es else "de" if is_de else "cn"
         )
         if market != "cn":
             fetchers = self._filter_daily_fetchers_for_market(fetchers, market)
@@ -2502,9 +2510,13 @@ class DataFetcherManager:
         is_kr = (not is_us) and (not is_hk) and _is_kr_market(stock_code)
         is_tw = (not is_us) and (not is_hk) and _is_tw_market(stock_code)
         is_es = (not is_us) and (not is_hk) and _is_es_market(stock_code)
+        is_de = (not is_us) and (not is_hk) and _is_de_market(stock_code)
 
-        if is_jp or is_kr or is_tw or is_es:
-            market_label = "日股" if is_jp else "韩股" if is_kr else "台股" if is_tw else "西班牙股"
+        if is_jp or is_kr or is_tw or is_es or is_de:
+            market_label = (
+                "日股" if is_jp else "韩股" if is_kr else "台股" if is_tw
+                else "西班牙股" if is_es else "德股"
+            )
             quote = self._try_fetcher_quote(stock_code, "YfinanceFetcher", **target_kwargs)
             if quote is not None:
                 logger.info(f"[实时行情] {market_label} {stock_code} 成功获取 (来源: YfinanceFetcher)")
@@ -4326,7 +4338,7 @@ class DataFetcherManager:
         stock_code = normalize_stock_code(stock_code)
         market = _market_tag(stock_code)
         is_etf = _is_etf_code(stock_code)
-        if market in {"us", "hk", "jp", "kr", "tw", "es"}:
+        if market in {"us", "hk", "jp", "kr", "tw", "es", "de"}:
             return self._build_offshore_fundamental_context(
                 stock_code,
                 market=market,

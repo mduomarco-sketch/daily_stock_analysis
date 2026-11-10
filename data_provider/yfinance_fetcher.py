@@ -96,8 +96,8 @@ class YfinanceFetcher(BaseFetcher):
 
     @staticmethod
     def _is_es_suffix_stock(stock_code: str) -> bool:
-        """Return True for Madrid (BME) Yahoo symbols with letter bases, e.g. SAN.MC."""
-        return is_suffix_market_symbol(stock_code, "es")
+        """Return True for European letter-ticker Yahoo symbols: Madrid (SAN.MC), XETRA (NUKL.DE)."""
+        return is_suffix_market_symbol(stock_code, "es") or is_suffix_market_symbol(stock_code, "de")
 
     def _convert_stock_code(self, stock_code: str) -> str:
         """

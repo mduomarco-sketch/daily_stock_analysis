@@ -2212,7 +2212,7 @@ class NotificationService(
         from src.market_context import detect_market
 
         return {
-            "us": "USD", "hk": "HKD", "cn": "CNY", "jp": "JPY", "kr": "KRW", "tw": "TWD", "es": "EUR",
+            "us": "USD", "hk": "HKD", "cn": "CNY", "jp": "JPY", "kr": "KRW", "tw": "TWD", "es": "EUR", "de": "EUR",
         }.get(detect_market(getattr(result, "code", None)))
 
     _CURRENCY_SUFFIX = {

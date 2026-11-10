@@ -141,6 +141,40 @@ def test_spanish_brave_locale():
     assert SearchService._brave_search_locale("SAN.MC", prefer_chinese=False) == {"search_lang": "es", "country": "ES"}
 
 
+# --- Germany (XETRA, .DE) ----------------------------------------------------
+
+def test_german_tickers_are_market_de():
+    from data_provider.base import _market_tag
+    from data_provider.yfinance_fetcher import YfinanceFetcher
+    from src.core.trading_calendar import MARKET_EXCHANGE, get_market_for_stock
+    from src.market_context import detect_market
+    from src.services.market_symbol_utils import get_suffix_market
+    from src.services.stock_list_parser import parse_analysis_target
+
+    fetcher = YfinanceFetcher()
+    for code in ("NUKL.DE", "SAP.DE", "VOW3.DE", "1COV.DE"):
+        assert get_suffix_market(code) == "de", code
+        assert detect_market(code) == "de", code
+        assert get_market_for_stock(code) == "de", code
+        assert _market_tag(code) == "de", code
+        assert fetcher._convert_stock_code(code) == code  # not "NUKL.DE.SZ"
+        target = parse_analysis_target(code)
+        assert (target.canonical_id, target.exchange) == (code, "DE"), code
+    assert MARKET_EXCHANGE["de"] == "XETR"
+    # a purely numeric base is never German
+    assert get_suffix_market("123456.DE") is None
+
+
+def test_market_filter_spain_and_germany_share_the_evening_run():
+    codes = ["AAPL", "AVAV", "SAN.MC", "NUKL.DE"]
+    assert _filter_by_analysis_markets(codes, "es,de") == ["SAN.MC", "NUKL.DE"]
+    assert _filter_by_analysis_markets(codes, "-es,-de") == ["AAPL", "AVAV"]
+
+
+def test_german_etf_uses_english_news_queries():
+    assert SearchService._is_foreign_stock("NUKL.DE") is True
+
+
 # --- Regression: Spanish reports with a data source crashed (KeyError: 'es') ---
 
 def test_spanish_reports_render_with_snapshot_source():

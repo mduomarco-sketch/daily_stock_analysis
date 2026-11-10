@@ -2,7 +2,7 @@ name: 每日股票分析
 
 on:
   # Two evening runs on weekdays, in Madrid local time:
-  #   17:45 - after the Madrid close (17:30)  -> Spanish stocks only
+  #   17:45 - after the Madrid close (17:30)  -> Spanish + German (XETRA) stocks only
   #   22:30 - after the New York close        -> all other stocks + market review
   # GitHub cron is UTC-only with no DST, so each run is scheduled at both its
   # winter (CET) and summer (CEST) UTC time; the run step keeps the one that
@@ -516,11 +516,11 @@ jobs:
           fi
           case "$SCHEDULE" in
             '45 16 * * 1-5'|'45 15 * * 1-5')
-              export ANALYSIS_MARKETS="es"
+              export ANALYSIS_MARKETS="es,de"
               MODE="stocks-only"
               ;;
             '30 21 * * 1-5'|'30 20 * * 1-5')
-              export ANALYSIS_MARKETS="-es"
+              export ANALYSIS_MARKETS="-es,-de"
               ;;
           esac
           echo "🌍 Markets for this run: ${ANALYSIS_MARKETS:-all}"

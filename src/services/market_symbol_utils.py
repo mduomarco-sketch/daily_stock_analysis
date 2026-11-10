@@ -39,6 +39,9 @@ _SUFFIX_MARKET_SPECS: tuple[SuffixMarketSpec, ...] = (
     # Spain (Bolsa de Madrid / BME continuous market): letter tickers such as
     # SAN.MC, BBVA.MC, ITX.MC, A3M.MC.
     SuffixMarketSpec("es", ("MC",), (), base_pattern=r"[A-Z][A-Z0-9]{0,5}"),
+    # Germany (XETRA): letter/digit tickers such as SAP.DE, VOW3.DE, 1COV.DE and
+    # ETFs like NUKL.DE; at least one letter so numeric codes never match.
+    SuffixMarketSpec("de", ("DE",), (), base_pattern=r"(?=[A-Z0-9]*[A-Z])[A-Z0-9]{1,6}"),
 )
 
 _MARKET_TO_SPEC = {spec.market: spec for spec in _SUFFIX_MARKET_SPECS}
@@ -62,7 +65,7 @@ def split_suffix_symbol(stock_code: str) -> tuple[str, str] | None:
 
 
 def get_suffix_market(stock_code: str) -> Optional[str]:
-    """Return jp/kr/tw/es for supported suffix-only Yahoo symbols, else None."""
+    """Return jp/kr/tw/es/de for supported suffix-only Yahoo symbols, else None."""
 
     parts = split_suffix_symbol(stock_code)
     if parts is None:
@@ -99,6 +102,14 @@ def is_tw_suffix_symbol(stock_code: str) -> bool:
 
 def is_es_suffix_symbol(stock_code: str) -> bool:
     return is_suffix_market_symbol(stock_code, "es")
+
+
+def is_de_suffix_symbol(stock_code: str) -> bool:
+    return is_suffix_market_symbol(stock_code, "de")
+
+
+# European letter-ticker markets served by Yahoo Finance only (no Chinese sources).
+EUROPEAN_SUFFIX_MARKETS = frozenset({"es", "de"})
 
 
 def normalize_suffix_market_symbol(stock_code: str) -> Optional[str]:

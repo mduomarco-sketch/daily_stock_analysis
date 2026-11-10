@@ -82,6 +82,10 @@ _MARKET_ROLES = {
         "zh": "西班牙股",
         "en": "Spain stock",
     },
+    "de": {
+        "zh": "德国股票/ETF",
+        "en": "Germany (XETRA) stock or ETF",
+    },
 }
 
 _MARKET_GUIDELINES = {
@@ -163,6 +167,22 @@ _MARKET_GUIDELINES = {
             "the cycles of heavyweight sectors (banks, utilities, telecoms, retail) and dividend policy; BME has no fixed "
             "daily price limits but uses volatility auctions; do not apply China A-share concepts such as daily "
             "price-limit boards, Northbound flows, Dragon Tiger lists, or margin-financing narratives."
+        ),
+    },
+    "de": {
+        "zh": (
+            "- 本次分析对象为 **德国 XETRA 上市证券**（Yahoo Finance 后缀 `.DE`），以欧元（EUR）计价；可能是个股，也可能是 UCITS ETF。\n"
+            "- 如为 ETF：请分析其跟踪的主题/指数、主要成分股、费用率与资金流，而不是单一公司的财报；"
+            "请关注欧洲央行（ECB）政策、DAX 走势与欧元汇率；XETRA 无涨跌停但有波动中断机制；"
+            "不要套用 A 股涨跌停、北向资金、龙虎榜、融资融券等 A 股专属概念。"
+        ),
+        "en": (
+            "- This analysis covers a **security listed on XETRA (Germany)** (Yahoo suffix `.DE`), priced in EUR; it may be "
+            "a single stock or a UCITS ETF.\n"
+            "- If it is an ETF: analyse the theme/index it tracks, its main holdings, costs and flows rather than one "
+            "company's earnings. Use eurozone context: ECB policy, the DAX trend and EUR FX; XETRA has no daily price "
+            "limits but uses volatility interruptions; do not apply China A-share concepts such as daily price-limit "
+            "boards, Northbound flows, Dragon Tiger lists, or margin-financing narratives."
         ),
     },
 }
