@@ -14,6 +14,7 @@ import json
 import logging
 import math
 import re
+import os
 import time
 from dataclasses import dataclass
 from typing import Optional, Dict, Any, List, Tuple, Callable, Union
@@ -304,6 +305,44 @@ class _LiteLLMStreamError(RuntimeError):
     def __init__(self, message: str, *, partial_received: bool = False):
         super().__init__(message)
         self.partial_received = partial_received
+
+
+_OVERLOAD_MARKERS = (
+    "503", "unavailable", "overloaded", "high demand", "serviceunavailable",
+    "429", "resource_exhausted", "ratelimit", "rate limit", "too many requests",
+)
+_DAILY_QUOTA_MARKERS = ("perday", "per day", "requests per day", "daily")
+
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        value = int(os.getenv(name, "") or default)
+    except ValueError:
+        return default
+    return max(value, 0)
+
+
+def _exception_text(exc: BaseException) -> str:
+    """Text of an exception, its details and its cause/context chain (lowercase)."""
+    parts: List[str] = []
+    seen = set()
+    current: Optional[BaseException] = exc
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        parts.append(f"{type(current).__name__} {current}")
+        details = getattr(current, "details", None)
+        if details:
+            parts.append(repr(details))
+        current = current.__cause__ or current.__context__
+    return " ".join(parts).lower()
+
+
+def is_provider_overload_error(exc: BaseException) -> bool:
+    """True for temporary provider overload (503 / per-minute 429), not daily quota."""
+    text = _exception_text(exc)
+    if any(marker in text for marker in _DAILY_QUOTA_MARKERS):
+        return False
+    return any(marker in text for marker in _OVERLOAD_MARKERS)
 
 
 class _AllModelsFailedError(Exception):
@@ -3550,7 +3589,33 @@ Output strictly in the following JSON format. This is a complete Decision Dashbo
             litellm_completion_callable=self._call_litellm_impl,
         )
 
-    def _call_litellm(
+    def _call_litellm(self, prompt: str, generation_config: dict, **kwargs: Any):
+        """Call the model, waiting and retrying while the provider is overloaded.
+
+        A 503 ("high demand") or a per-minute 429 usually clears within minutes,
+        so instead of failing the stock the call is retried every
+        ``LLM_OVERLOAD_RETRY_SECONDS`` (default 60) up to ``LLM_OVERLOAD_MAX_RETRIES``
+        times (default 15). Per-day quota errors and all other errors are raised
+        immediately, as is a failure that already produced partial text.
+        """
+        max_retries = _env_int("LLM_OVERLOAD_MAX_RETRIES", 15)
+        wait_seconds = _env_int("LLM_OVERLOAD_RETRY_SECONDS", 60)
+        attempt = 0
+        while True:
+            try:
+                return self._call_litellm_once(prompt, generation_config, **kwargs)
+            except Exception as exc:
+                partial = getattr(exc, "last_response_text", None)
+                if attempt >= max_retries or partial is not None or not is_provider_overload_error(exc):
+                    raise
+                attempt += 1
+                logger.warning(
+                    "[LLM overload] provider busy, retry %d/%d in %ds: %s",
+                    attempt, max_retries, wait_seconds, str(exc)[:200],
+                )
+                time.sleep(wait_seconds)
+
+    def _call_litellm_once(
         self,
         prompt: str,
         generation_config: dict,

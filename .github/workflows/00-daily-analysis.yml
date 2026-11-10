@@ -455,6 +455,9 @@ jobs:
           SINGLE_STOCK_NOTIFY: ${{ vars.SINGLE_STOCK_NOTIFY || secrets.SINGLE_STOCK_NOTIFY || 'false' }}
           ALERT_ON_CHANGE: ${{ vars.ALERT_ON_CHANGE || secrets.ALERT_ON_CHANGE || 'false' }}
           ANALYSIS_MARKETS: ${{ vars.ANALYSIS_MARKETS || '' }}
+          # Provider overloaded (503 / per-minute 429): wait and retry each stock.
+          LLM_OVERLOAD_MAX_RETRIES: ${{ vars.LLM_OVERLOAD_MAX_RETRIES || '15' }}
+          LLM_OVERLOAD_RETRY_SECONDS: ${{ vars.LLM_OVERLOAD_RETRY_SECONDS || '60' }}
           ALERT_SCORE_DELTA: ${{ vars.ALERT_SCORE_DELTA || secrets.ALERT_SCORE_DELTA || '10' }}
           BACKTEST_WEEKLY_REPORT_ENABLED: ${{ vars.BACKTEST_WEEKLY_REPORT_ENABLED || secrets.BACKTEST_WEEKLY_REPORT_ENABLED || 'true' }}
           MARKET_REVIEW_ENABLED: ${{ vars.MARKET_REVIEW_ENABLED || secrets.MARKET_REVIEW_ENABLED || 'true' }}
