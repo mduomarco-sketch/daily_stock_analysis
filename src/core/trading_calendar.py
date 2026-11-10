@@ -41,6 +41,7 @@ except ImportError:
 MARKET_EXCHANGE = {
     "cn": "XSHG", "hk": "XHKG", "us": "XNYS", "jp": "XTKS", "kr": "XKRX", "tw": "XTAI",
     "es": "XMAD",  # Bolsa de Madrid (BME continuous market)
+    "de": "XETR",  # XETRA (Deutsche Börse)
 }
 
 # Market -> IANA timezone for "today"
@@ -52,6 +53,9 @@ MARKET_TIMEZONE = {
     "kr": "Asia/Seoul",
     "tw": "Asia/Taipei",
     "es": "Europe/Madrid",
+    "de": "Europe/Berlin",
+    # Crypto trades 24/7: no exchange calendar, so is_market_open() is always True.
+    "crypto": "UTC",
 }
 
 # P0 market phase baseline (Issue #1386). This is an intentionally small
@@ -69,6 +73,7 @@ _CLOSING_AUCTION_WINDOW_MINUTES = {
     "kr": 10,
     "tw": 5,
     "es": 5,  # BME closing auction 17:30-17:35 CET
+    "de": 5,  # XETRA closing auction 17:30-17:35 CET
 }
 _SUPPORTED_ANALYSIS_PHASES = {
     "auto",

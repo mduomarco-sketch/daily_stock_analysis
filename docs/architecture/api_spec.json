@@ -4712,7 +4712,9 @@
               "jp",
               "kr",
               "tw",
-              "es"
+              "es",
+              "de",
+              "crypto"
             ],
             "title": "Market"
           },
@@ -6618,7 +6620,9 @@
                   "jp",
                   "kr",
                   "tw",
-                  "es"
+                  "es",
+                  "de",
+                  "crypto"
                 ]
               },
               {
@@ -9124,7 +9128,9 @@
               "jp",
               "kr",
               "tw",
-              "es"
+              "es",
+              "de",
+              "crypto"
             ],
             "title": "Market"
           },
