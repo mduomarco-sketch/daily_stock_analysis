@@ -64,9 +64,20 @@ def split_suffix_symbol(stock_code: str) -> tuple[str, str] | None:
     return base, suffix
 
 
-def get_suffix_market(stock_code: str) -> Optional[str]:
-    """Return jp/kr/tw/es/de for supported suffix-only Yahoo symbols, else None."""
+# Yahoo Finance crypto pairs: BTC-USD, ETH-EUR, SOL-USD. Plain "BTC" is NOT crypto on
+# Yahoo (it is a US-listed Bitcoin trust), so the quote currency is required.
+_CRYPTO_PAIR_RE = re.compile(r"[A-Z0-9]{2,10}-(?:USD|EUR|GBP|USDT|USDC)")
 
+
+def is_crypto_symbol(stock_code: str) -> bool:
+    return _CRYPTO_PAIR_RE.fullmatch((stock_code or "").strip().upper()) is not None
+
+
+def get_suffix_market(stock_code: str) -> Optional[str]:
+    """Return jp/kr/tw/es/de/crypto for supported Yahoo-only symbols, else None."""
+
+    if is_crypto_symbol(stock_code):
+        return "crypto"
     parts = split_suffix_symbol(stock_code)
     if parts is None:
         return None
@@ -122,6 +133,12 @@ def normalize_suffix_market_symbol(stock_code: str) -> Optional[str]:
     if get_suffix_market(f"{base}.{suffix}") is None:
         return None
     return f"{base}.{suffix}"
+
+
+def normalize_crypto_symbol(stock_code: str) -> Optional[str]:
+    """Upper-case Yahoo crypto pair (btc-usd -> BTC-USD), or None."""
+    code = (stock_code or "").strip().upper()
+    return code if is_crypto_symbol(code) else None
 
 
 def suffix_base_lookup_allowed(canonical_code: str) -> bool:

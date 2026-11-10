@@ -323,6 +323,10 @@ def _infer_market(code: str) -> Optional[str]:
         return "es"
     if text.endswith(".DE"):
         return "de"
+    from src.services.market_symbol_utils import is_crypto_symbol
+
+    if is_crypto_symbol(text):
+        return "crypto"
     if text.isdigit() and len(text) == 6:
         return "cn"
     if re.fullmatch(r"[A-Z]{1,5}(?:\.[A-Z]{1,2})?", text):

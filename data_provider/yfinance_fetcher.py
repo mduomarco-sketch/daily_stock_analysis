@@ -96,8 +96,13 @@ class YfinanceFetcher(BaseFetcher):
 
     @staticmethod
     def _is_es_suffix_stock(stock_code: str) -> bool:
-        """Return True for European letter-ticker Yahoo symbols: Madrid (SAN.MC), XETRA (NUKL.DE)."""
-        return is_suffix_market_symbol(stock_code, "es") or is_suffix_market_symbol(stock_code, "de")
+        """Yahoo-only letter symbols passed through unchanged: Madrid (SAN.MC),
+        XETRA (NUKL.DE) and crypto pairs (BTC-USD)."""
+        return (
+            is_suffix_market_symbol(stock_code, "es")
+            or is_suffix_market_symbol(stock_code, "de")
+            or is_suffix_market_symbol(stock_code, "crypto")
+        )
 
     def _convert_stock_code(self, stock_code: str) -> str:
         """

@@ -90,6 +90,7 @@ _STOCK_CODE_RE = re.compile(
     r"|\d{4,6}\.(?:TW|TWO)"                  # Taiwan Yahoo suffix format
     r"|[A-Z][A-Z0-9]{0,5}\.MC"               # Spain (Bolsa de Madrid) Yahoo suffix format
     r"|(?=[A-Z0-9]*[A-Z])[A-Z0-9]{1,6}\.DE"  # Germany (XETRA) Yahoo suffix format
+    r"|[A-Z0-9]{2,10}-(?:USD|EUR|GBP|USDT|USDC)"  # Yahoo crypto pair (BTC-USD)
     r"|[A-Z]{1,5}(?:\.(?:US|[A-Z]))?"         # US ticker
     r")$",
     re.IGNORECASE,

@@ -175,6 +175,34 @@ def test_german_etf_uses_english_news_queries():
     assert SearchService._is_foreign_stock("NUKL.DE") is True
 
 
+# --- Crypto (Yahoo pairs like BTC-USD) ---------------------------------------
+
+def test_crypto_pairs_are_market_crypto_and_always_open():
+    from data_provider.base import _market_tag
+    from data_provider.yfinance_fetcher import YfinanceFetcher
+    from src.core.trading_calendar import get_market_for_stock, get_open_markets_today
+    from src.market_context import detect_market
+    from src.services.market_symbol_utils import get_suffix_market, is_crypto_symbol
+
+    fetcher = YfinanceFetcher()
+    for code in ("BTC-USD", "ETH-EUR", "btc-usd"):
+        assert get_suffix_market(code) == "crypto", code
+        assert detect_market(code) == "crypto", code
+        assert get_market_for_stock(code) == "crypto", code
+        assert _market_tag(code) == "crypto", code
+        assert fetcher._convert_stock_code(code) == code.upper()  # not "BTC-USD.SZ"
+    # plain BTC is a US-listed trust on Yahoo, not the coin
+    assert is_crypto_symbol("BTC") is False
+    assert "crypto" in get_open_markets_today()
+    assert SearchService._is_foreign_stock("BTC-USD") is True
+
+
+def test_crypto_runs_with_the_us_evening_run():
+    codes = ["AAPL", "SAN.MC", "NUKL.DE", "BTC-USD"]
+    assert _filter_by_analysis_markets(codes, "-es,-de") == ["AAPL", "BTC-USD"]
+    assert _filter_by_analysis_markets(codes, "es,de") == ["SAN.MC", "NUKL.DE"]
+
+
 # --- Regression: Spanish reports with a data source crashed (KeyError: 'es') ---
 
 def test_spanish_reports_render_with_snapshot_source():

@@ -86,6 +86,10 @@ _MARKET_ROLES = {
         "zh": "德国股票/ETF",
         "en": "Germany (XETRA) stock or ETF",
     },
+    "crypto": {
+        "zh": "加密货币",
+        "en": "cryptocurrency",
+    },
 }
 
 _MARKET_GUIDELINES = {
@@ -183,6 +187,20 @@ _MARKET_GUIDELINES = {
             "company's earnings. Use eurozone context: ECB policy, the DAX trend and EUR FX; XETRA has no daily price "
             "limits but uses volatility interruptions; do not apply China A-share concepts such as daily price-limit "
             "boards, Northbound flows, Dragon Tiger lists, or margin-financing narratives."
+        ),
+    },
+    "crypto": {
+        "zh": (
+            "- 本次分析对象为 **加密货币交易对**（Yahoo Finance 格式如 `BTC-USD`），7×24 小时交易，没有开盘/收盘、涨跌停或公司财报。\n"
+            "- 请关注：现货比特币 ETF 资金流、美联储利率与美元流动性、链上指标（如交易所余额）、减半周期、监管消息与市场情绪；"
+            "波动远高于股票，止损位应留出更大空间；不要使用市盈率、营收、分红等公司基本面概念，也不要套用 A 股专属概念。"
+        ),
+        "en": (
+            "- This analysis covers a **cryptocurrency pair** (Yahoo Finance format such as `BTC-USD`). It trades 24/7: "
+            "there is no open/close session, no price limits and no company earnings.\n"
+            "- Focus on: spot Bitcoin ETF flows, Fed rates and USD liquidity, on-chain signals (e.g. exchange balances), "
+            "the halving cycle, regulation news and sentiment. Volatility is far higher than for stocks, so stop-losses "
+            "need wider room. Do not use company fundamentals (P/E, revenue, dividends) or China A-share concepts."
         ),
     },
 }

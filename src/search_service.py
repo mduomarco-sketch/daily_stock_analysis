@@ -2536,8 +2536,9 @@ class SearchService:
         """
         from src.services.market_symbol_utils import get_suffix_market
 
-        # XETRA securities (often international UCITS ETFs) use the English queries.
-        if get_suffix_market((stock_code or "").strip()) == "de":
+        # XETRA securities (often international UCITS ETFs) and crypto pairs
+        # (BTC-USD) are covered by English-language news: use the English queries.
+        if get_suffix_market((stock_code or "").strip()) in ("de", "crypto"):
             return True
         code = canonicalize_foreign_stock_code(stock_code).strip()
         if not code:

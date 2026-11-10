@@ -54,6 +54,8 @@ MARKET_TIMEZONE = {
     "tw": "Asia/Taipei",
     "es": "Europe/Madrid",
     "de": "Europe/Berlin",
+    # Crypto trades 24/7: no exchange calendar, so is_market_open() is always True.
+    "crypto": "UTC",
 }
 
 # P0 market phase baseline (Issue #1386). This is an intentionally small
